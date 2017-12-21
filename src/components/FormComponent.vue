@@ -7,12 +7,10 @@
 </template>
 
 <script>
-  import VueForm from 'vue-form'
   import TextFieldComponent from './field-types/TextFieldComponent'
 
   export default {
     name: 'FormComponent',
-    mixins: [VueForm],
     components: {
       TextFieldComponent
     },
