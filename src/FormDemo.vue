@@ -19,11 +19,11 @@
             <span id="message-span">{{message}}</span>
           </div>
           <div class="card-body">
-            <form-component id="example-form" :schema="schema" :formData="data" :hooks="hooks"></form-component>
+            <form-component id="example-form" :schema="schema" :formData="formData" @onValueChanged="onValueChanged"></form-component>
           </div>
           <div class="card-footer">
-            <button id="save-btn" class="btn btn-primary" type="submit" form="example-form">Save</button>
-            <button id="cancel-btn" class="btn btn-secondary" type="reset" form="example-form">Cancel</button>
+            <button id="save-btn" class="btn btn-primary" type="submit" v-on:click="onSubmit">Save</button>
+            <button id="cancel-btn" class="btn btn-secondary" type="button" v-on:click="onCancel">Cancel</button>
           </div>
         </div>
       </div>
@@ -43,25 +43,25 @@
     },
     data () {
       return {
-        hooks: {
-          onSubmit: (formData) => {
-            this.message = 'onSubmit: ' + JSON.stringify(formData)
-          },
-          onCancel: () => {
-            this.message = 'onCancel'
-          },
-          onValueChanged: (formData) => {
-            this.message = 'onValueChanged: ' + JSON.stringify(formData)
-          }
-        },
         message: null,
         schema: {
           fields: EntityToStateMapper.generateFormFields(EntityTypeV2Response.metadata)
         }
       }
     },
+    methods: {
+      onSubmit: function () {
+        this.message = 'onSubmit: ' + JSON.stringify(this.formData)
+      },
+      onCancel: function () {
+        this.message = 'form cancel from demo'
+      },
+      onValueChanged: function () {
+        this.message = 'onValueChanged: ' + JSON.stringify(this.formData)
+      }
+    },
     computed: {
-      data () {
+      formData () {
         return EntityToStateMapper.generateFormData(this.schema.fields, EntityTypeV2Response.items)
       }
     }

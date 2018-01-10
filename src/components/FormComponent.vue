@@ -1,11 +1,11 @@
 <template>
-  <vue-form :id="id" :state="state" @submit.prevent="hooks.onSubmit(data)" @reset.prevent="hooks.onCancel">
+  <vue-form :id="id" :state="state">
     <template v-for="field in schema.fields">
       <form-field-component
-        :data="data"
+        :data="formData"
         :field="field"
         :state="state"
-        @dataChange="hooks.onValueChanged(data)">
+        @dataChange="onValueChanged">
       </form-field-component>
     </template>
   </vue-form>
@@ -15,7 +15,6 @@
   import VueForm from 'vue-form'
   import FormFieldComponent from './FormFieldComponent'
   import { isValidSchema } from '../util/SchemaService'
-  import { FormHook } from '../flow.types'
 
   export default {
     name: 'FormComponent',
@@ -30,19 +29,20 @@
         required: true,
         validator: isValidSchema
       },
-      data: {
+      formData: {
         type: Object,
         required: false,
         default: () => ({})
-      },
-      hooks: {
-        type: FormHook,
-        required: true
       }
     },
     data () {
       return {
         state: {}
+      }
+    },
+    methods: {
+      onValueChanged () {
+        this.$emit('onValueChanged')
       }
     },
     components: {
