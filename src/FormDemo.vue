@@ -19,7 +19,13 @@
             <span id="message-span">{{message}}</span>
           </div>
           <div class="card-body">
-            <form-component id="example-form" :schema="schema" :formData="formData" @onValueChanged="onValueChanged"></form-component>
+            <form-component
+              id="example-form"
+              :schema="schema"
+              :formData="formData"
+              :formState="formState"
+              @onValueChanged="onValueChanged">
+            </form-component>
           </div>
           <div class="card-footer">
             <button id="save-btn" class="btn btn-primary" type="submit" v-on:click="onSubmit">Save</button>
@@ -46,7 +52,8 @@
         message: null,
         schema: {
           fields: EntityToStateMapper.generateFormFields(EntityTypeV2Response.metadata)
-        }
+        },
+        formState: {}
       }
     },
     methods: {

@@ -4,7 +4,7 @@
       <form-field-component
         :data="formData"
         :field="field"
-        :state="state"
+        :state="formState"
         @dataChange="onValueChanged">
       </form-field-component>
     </template>
@@ -33,11 +33,15 @@
         type: Object,
         required: false,
         default: () => ({})
+      },
+      formState: {
+        type: Object,
+        required: true
       }
     },
     data () {
       return {
-        state: {}
+        state: this.formState
       }
     },
     methods: {
