@@ -2,7 +2,6 @@
   <validate :state="state" :custom="{'validate': isValid}">
     <div class="form-group">
       <label :for="field.id">{{ field.label }}</label>
-
       <!--
       /**
         For creating options that do not exist:
@@ -16,19 +15,30 @@
           we want filtering on multiple parameters
       */
       -->
-      <v-select v-model="localValue"
-                :options="options"
-                :onSearch="fetchOptions"
-                :filterable="false"
-                :inputId="field.id"
-                :name="field.id"
-                :required="isRequired"
-                :multiple="true">
+      <div class="input-group">
+        <v-select v-model="localValue"
+                  class="form-control form-control-lg"
+                  :options="options"
+                  :onSearch="fetchOptions"
+                  :filterable="false"
+                  :inputId="field.id"
+                  :name="field.id"
+                  :required="isRequired"
+                  :multiple="true">
 
-        <div slot="no-options">
-          <small v-if="localValue">Option '{{ localValue }}' not found.</small>
+          <div slot="no-options">
+            <small v-if="localValue">Option '{{ localValue }}' not found.</small>
+          </div>
+        </v-select>
+
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary btn-lg" type="button" title="Add">
+            <i class="fa fa-plus">
+              <span aria-hidden="true" class="sr-only">Add</span>
+            </i>
+          </button>
         </div>
-      </v-select>
+      </div>
 
       <small :id="field.id + '-description'" class="form-text text-muted">
         {{ field.description }}
@@ -42,6 +52,18 @@
     </div>
   </validate>
 </template>
+
+<style>
+  .input-group > .v-select {
+    padding: 0.3rem 1rem;
+    max-height: 3rem;
+  }
+
+  .input-group > .v-select > .dropdown-toggle {
+    border: 0;
+    max-height: 1rem;
+  }
+</style>
 
 <script>
   import VueForm from 'vue-form'

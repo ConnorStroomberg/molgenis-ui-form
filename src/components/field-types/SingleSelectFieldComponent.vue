@@ -18,6 +18,7 @@
       -->
       <v-select v-model="localValue"
                 :options="options"
+                class="form-control form-control-lg"
                 :onSearch="fetchOptions"
                 :filterable="false"
                 :inputId="field.id"
@@ -41,6 +42,30 @@
     </div>
   </validate>
 </template>
+
+<style>
+  .form-control-lg.v-select {
+    padding: 0;
+  }
+
+  .form-control-lg.v-select > .dropdown-toggle {
+    padding: 0.4rem 1rem;
+    border: 0;
+  }
+
+  .v-select .selected-tag {
+    padding-left: 0;
+    margin-left: 0;
+  }
+
+  .v-select .dropdown-toggle .clear{
+    bottom: 14px;
+  }
+
+  .v-select .dropdown-toggle .open-indicator {
+    bottom: 12px;
+  }
+</style>
 
 <script>
   import VueForm from 'vue-form'
