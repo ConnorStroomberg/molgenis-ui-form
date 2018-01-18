@@ -42,7 +42,9 @@
         :state="state[field.id]"
         :isValid="isValid"
         :isRequired="isRequired"
-        @dataChange="onDataChange">
+        @dataChange="onDataChange"
+        @addOption="addOption"
+      >
       </multi-select-field-component>
     </template>
 
@@ -154,6 +156,9 @@
     methods: {
       onDataChange () {
         this.$emit('dataChange')
+      },
+      addOption (completedFunction) {
+        completedFunction({id: 'foo', label: 'dit is een nieuwe option', value: 'een_value'})
       }
     },
     computed: {

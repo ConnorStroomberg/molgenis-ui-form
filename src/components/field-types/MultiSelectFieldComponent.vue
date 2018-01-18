@@ -26,6 +26,11 @@
                   :required="isRequired"
                   :multiple="true">
 
+          <template slot="option" slot-scope="option">
+            <div v-if="option.type === 'ADD_OPTION'" @mousedown.prevent.stop="addNewOption($event, option)">Add new option</div>
+            <span v-else>{{ option.label }}</span>
+          </template>
+
           <div slot="no-options">
             <small v-if="localValue">Option '{{ localValue }}' not found.</small>
           </div>
@@ -53,13 +58,13 @@
   </validate>
 </template>
 
-<style>
-  .input-group > .v-select {
+<style scoped>
+  .input-group >>> .v-select {
     padding: 0.3rem 1rem;
     max-height: 3rem;
   }
 
-  .input-group > .v-select > .dropdown-toggle {
+  .input-group >>> .v-select > .dropdown-toggle {
     border: 0;
     max-height: 1rem;
   }
@@ -108,9 +113,25 @@
       fetchOptions (search, loading) {
         loading(true)
         this.field.options(search).then(response => {
+          response.push({
+            id: null,
+            label: 'Add option',
+            value: undefined,
+            type: 'ADD_OPTION'
+          })
           this.options = response
           loading(false)
         })
+      },
+      addNewOption (event, option) {
+        console.log('add new option')
+        // close the drop down
+        event.target.parentElement.parentElement.parentElement.style.display = 'none'
+        this.$emit('addOption', this.afterOptionCreation)
+      },
+      afterOptionCreation (newOption) {
+        this.options.push(newOption)
+        this.localValue.push(newOption)
       }
     },
     watch: {
