@@ -8,6 +8,9 @@ script:
 - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash .travis/run_on_pull_requests.sh; fi'
 - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash .travis/run_on_non_pull_requests.sh; fi'
 notifications:
+  email:
+      on_success: never # default: change
+      on_failure: always # default: always
   slack:
     rooms:
       secure: blnxfapt6aAdRDjNvy2Ykp3yPxhRqo0srfz9MI2obKGXFOO2ee+AF0TNosmz9aZG0J3u4e3YI+z9BvjcNMvTzzPCjiLiC3MSbtB9w0SHwhg6q7s1ehVoYKqB22++8S6GEYy5FgBpBLQ+jXEnwiglHfKLowJjvQS8s2NBMhAwEqY=
