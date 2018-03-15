@@ -419,4 +419,15 @@ describe('evaluator', () => {
       expect(result).to.equal(false)
     })
   })
+
+  describe.only('deep ref', () => {
+    it('do stuff', () => {
+      const expression = '$(\'gender\').value()'
+      const entity = {
+        gender: 3,
+        'gender.label': 'male'}
+      const result = evaluator(expression, entity)
+      expect(result).to.equal('male')
+    })
+  })
 })
