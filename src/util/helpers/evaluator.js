@@ -10,7 +10,8 @@ import moment from 'moment'
  * @returns the evaluated script result
  */
 export default function (script, entity) {
-  function attribute (value) {
+  function attribute (value, attr, entity) {
+
     var attribute = {
       /**
        *
@@ -26,6 +27,10 @@ export default function (script, entity) {
        */
       value: function () {
         return this.val
+      },
+
+      ref: function (attribute) {
+        return this.entity[attr + '.' + attribute]
       },
 
       /**
@@ -376,6 +381,9 @@ export default function (script, entity) {
     }
 
     attribute.val = value
+    attribute.attr = attr
+    attribute.entity = entity
+
     return attribute
   }
 
@@ -389,7 +397,7 @@ export default function (script, entity) {
 
   /*eslint-disable */
   function $ (attr) {
-    return new attribute(this[attr])
+    return new attribute(this[attr], attr, entity)
   }
 
   $ = $.bind(entity)
