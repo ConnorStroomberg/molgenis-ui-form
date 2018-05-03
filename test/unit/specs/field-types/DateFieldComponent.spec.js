@@ -46,24 +46,23 @@ describe('DateFieldComponent', () => {
       const wrapper = mount(DateFieldComponent, {propsData: propsData})
 
       it('should emit an updated Date object on change', () => {
-        wrapper.setData({localValue: '2018-01-02'})
+        const date = moment('1985-08-01', 'YYYY-MM-DD').toDate()
+        const expectedDateValue = date
+        wrapper.setData({localValue: date})
 
-        const expectedDateValue = moment('2018-01-02', 'YYYY-MM-DD').toDate()
-
-        expect(wrapper.emitted().input[0]).to.deep.equal([expectedDateValue])
-        expect(wrapper.emitted().dataChange[0]).to.deep.equal([])
+        expect(wrapper.emitted().input[1]).to.deep.equal([expectedDateValue])
+        expect(wrapper.emitted().dataChange[1]).to.deep.equal([])
       })
     })
 
-    describe('getDateFromValue', () => {
+    describe('getDateFromDateString', () => {
       const wrapper = mount(DateFieldComponent, {propsData: propsData})
 
       it('should return a moment object for a date string', () => {
         const date = '2018-01-02'
-        const actual = wrapper.vm.getDateFromValue(date)
-        const expected = moment(date, 'YYYY-MM-DD', true)
-
-        expect(actual).to.deep.equal(expected)
+        const expected = moment(date, 'YYYY-MM-DD', true).toDate()
+        wrapper.setData({isTimeIncluded: false})
+        expect(wrapper.vm.getDateFromDateString(date)).to.deep.equal(expected)
       })
     })
 
@@ -106,22 +105,22 @@ describe('DateFieldComponent', () => {
       const wrapper = mount(DateFieldComponent, {propsData: propsData})
 
       it('should emit an updated Date object including time on change', () => {
-        wrapper.setData({localValue: '2018-01-02 13:37'})
+        const date = moment('2018-01-02 13:37', 'YYYY-MM-DD HH:mm').toDate()
+        const expectedDateTimeValue = date
+        wrapper.setData({localValue: date})
 
-        const expectedDateTimeValue = moment('2018-01-02 13:37', 'YYYY-MM-DD HH:mm').toDate()
-
-        expect(wrapper.emitted().input[0]).to.deep.equal([expectedDateTimeValue])
-        expect(wrapper.emitted().dataChange[0]).to.deep.equal([])
+        expect(wrapper.emitted().input[1]).to.deep.equal([expectedDateTimeValue])
+        expect(wrapper.emitted().dataChange[1]).to.deep.equal([])
       })
     })
 
     describe('getDateTimeFromValue', () => {
       const wrapper = mount(DateFieldComponent, {propsData: propsData})
 
-      it('should return a moment object for a date string', () => {
-        const date = '2018-01-02 13:37'
-        const actual = wrapper.vm.getDateFromValue(date)
-        const expected = moment(date, 'YYYY-MM-DD HH:mm', true)
+      it('should return a date object for a date string', () => {
+        const date = '1980-09-10T15:05:09Z'
+        const expected = moment(date, 'YYYY-MM-DDTHH:mm:ssZZ', true).toDate()
+        const actual = wrapper.vm.getDateFromDateString(date)
 
         expect(actual).to.deep.equal(expected)
       })
@@ -130,8 +129,12 @@ describe('DateFieldComponent', () => {
     describe('isValidDateTime', () => {
       const wrapper = mount(DateFieldComponent, {propsData: propsData})
 
+      it('should return true if the localValue is set to undefined', () => {
+        expect(wrapper.vm.isValidDateTime(undefined)).to.equal(true)
+      })
+
       it('should return true if the localValue is set to a valid date', () => {
-        expect(wrapper.vm.isValidDateTime('2018-01-02 13:23')).to.equal(true)
+        expect(wrapper.vm.isValidDateTime('1980-09-10T15:05:09Z')).to.equal(true)
       })
 
       it('should return false if the localValue is set to a invalid date', () => {

@@ -6,7 +6,7 @@
       <div class="input-group">
         <flat-pickr
           :id="field.id"
-          v-model="localValue"
+          v-model="flatPickerDate"
           :config="config"
           :name="field.id"
           class="form-control"
@@ -50,6 +50,8 @@
   import 'flatpickr/dist/flatpickr.css'
   import moment from 'moment'
 
+  const USE_STRICT_MODE = true
+
   export default {
     name: 'DateFieldComponent',
     mixins: [VueForm],
@@ -81,52 +83,83 @@
       }
     },
     data () {
+      const serverFormat = this.isTimeIncluded ? 'YYYY-MM-DDTHH:mm:ssZZ' : 'YYYY-MM-DD'
+      const momentDisplayFormat = this.isTimeIncluded ? 'MMM D, YYYY h:m:s' : 'MMM D, YYYY'
+      const flatPickerDisplayFormat = this.isTimeIncluded ? 'M j, Y h:i:s' : 'M j, Y'
+
       return {
         // Store a local value to prevent changing the parent state
         localValue: this.value,
+        flatPickerDate: null, // model for flatpicker component
+        serverFormat,
+        momentDisplayFormat,
+        flatPickerDisplayFormat,
         config: {
           wrap: true,
           allowInput: true,
-          enableTime: this.isTimeIncluded
+          enableTime: this.isTimeIncluded,
+          dateFormat: flatPickerDisplayFormat
         }
       }
     },
     methods: {
       /**
-       * Convert a date string to a Moment Date.
+       * Convert a date string from the backend to a JavaScript Date object.
        * Include hours and minutes if time is enabled
        *
-       * @param dateString
-       * @returns {Moment} A date object created by moment
+       * @param dateString as send from the server
+       * @returns {Date} A date object
        */
-      getDateFromValue (dateString) {
-        const format = this.isTimeIncluded ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD'
-        return moment(dateString, format, true)
+      getDateFromDateString (dateString) {
+        return moment(dateString, this.serverFormat, USE_STRICT_MODE).toDate()
       },
 
       /**
-       * Validates a date string to see if it is a proper date
+       * Convert a string used in the frontend to a JavaScript Date object.
+       * @param displayValue string representing a date(-time)
+       * @returns {Date}
+       */
+      toServerValue (displayValue) {
+        return moment(displayValue, this.momentDisplayFormat, USE_STRICT_MODE).toDate()
+      },
+
+      /**
+       * Validates a date (string or date object) to see if it is a proper date.
        *
-       * @param dateString
+       * @param inputValue
        * @returns {boolean}
        */
-      isValidDateTime (dateString) {
-        const date = this.getDateFromValue(dateString)
-        return date != null && date.isValid()
+      isValidDateTime (inputValue) {
+        if (inputValue === undefined) {
+          return true // required field check if done else where
+        } else {
+          const date = typeof inputValue === 'string' ? this.getDateFromDateString(inputValue) : inputValue
+          return date != null && moment.utc(date).isValid()
+        }
       }
     },
     watch: {
       localValue (value) {
-        // Only emit a data change if the date is valid
-        if (this.isValidDateTime(value)) {
-          // Emit value changes to the parent (form)
-          // Always emit a date value, not a string
-          this.$emit('input', this.getDateFromValue(value).toDate())
-
-          // Emit value changes to trigger the onValueChange
-          // Do not use input event for this to prevent unwanted behavior
-          this.$emit('dataChange')
+        this.$emit('input', value)
+        this.$emit('dataChange')
+      },
+      flatPickerDate (newValue) {
+        if (newValue === '') {
+          this.localValue = null
+        } else {
+          const newDate = typeof newValue === 'string' ? this.toServerValue(newValue) : newValue
+          if (this.isValidDateTime(newDate)) {
+            this.localValue = new Date(newDate.getTime())
+          } else {
+            this.localValue = JSON.parse(JSON.stringify(newDate)) // clone any type
+          }
         }
+      }
+    },
+    created () {
+      if (this.value !== undefined) {
+        const utcMomentDateTime = moment.utc(this.value)
+        this.flatPickerDate = utcMomentDateTime.toDate()
       }
     },
     components: {

@@ -702,7 +702,8 @@ const items = {
   text: 'text value',
   hyperlink: 'www.nu.nl',
   boolean: true,
-  nillable_date: '2017-09-06',
+  nillable_date: '1980-09-10',
+  date_time: '1980-09-10T15:05:09Z',
   categorical: {href: 'url', value: 'ref1', label: 'label1'},
   categorical_mref: [
     {href: 'url', value: 'ref1', label: 'label1'},

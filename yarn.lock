@@ -3035,9 +3035,9 @@ flat-cache@^1.2.1:
     graceful-fs "^4.1.2"
     write "^0.2.1"
 
-flatpickr@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-4.3.2.tgz#6a477043c075ef36c3ff54fadb49b936a64d635f"
+flatpickr@^4.4.3:
+  version "4.4.4"
+  resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-4.4.4.tgz#fdeb083ca3d580eecb822a4080f67b06f0294fc7"
 
 flatten@^1.0.2:
   version "1.0.2"
@@ -7614,11 +7614,11 @@ vue-code@^1.2.3:
   dependencies:
     codemirror "5.x"
 
-vue-flatpickr-component@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/vue-flatpickr-component/-/vue-flatpickr-component-7.0.0.tgz#ad7f9490db0048ce2c721f34ad0e5085a004e9ac"
+vue-flatpickr-component@^7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/vue-flatpickr-component/-/vue-flatpickr-component-7.0.1.tgz#5af4ab8acc6e3d509e581db85429eb396a435fa8"
   dependencies:
-    flatpickr "^4.3.2"
+    flatpickr "^4.4.3"
 
 vue-form@^4.8.1:
   version "4.8.1"
