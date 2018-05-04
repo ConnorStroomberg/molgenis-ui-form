@@ -33,10 +33,6 @@
         </div>
       </div>
 
-      <small>
-        {{ localValue }}
-      </small>
-
       <small :id="field.id + '-description'" class="form-text text-muted">
         {{ field.description }}
       </small>
