@@ -7,7 +7,7 @@
         <flat-pickr
           :id="field.id"
           v-model="flatPickerDate"
-          :config="config"
+          :config="flatPickerConfig"
           :name="field.id"
           class="form-control"
           :class="{ 'is-invalid' : fieldState && (fieldState.$touched || fieldState.$submitted) && fieldState.$invalid}"
@@ -99,18 +99,21 @@
       }
     },
     data () {
+      let flatPickerConfig = {
+        wrap: true,
+        allowInput: false,
+        enableTime: this.isTimeIncluded,
+        dateFormat: this.isTimeIncluded ? 'M j, Y h:i:S K' : 'M j, Y'
+      }
+      if (flatpickerLangMap[this.$lng]) {
+        flatPickerConfig.locale = flatpickerLangMap[this.$lng]
+      }
       return {
         // Store a local value to prevent changing the parent state
         localValue: this.value,
         flatPickerDate: null, // model for flatpicker component
         serverFormat: this.isTimeIncluded ? 'YYYY-MM-DDTHH:mm:ssZZ' : 'YYYY-MM-DD',
-        config: {
-          locale: flatpickerLangMap[this.$lng || 'en'],
-          wrap: true,
-          allowInput: false,
-          enableTime: this.isTimeIncluded,
-          dateFormat: this.isTimeIncluded ? 'M j, Y h:i:S K' : 'M j, Y'
-        }
+        flatPickerConfig: flatPickerConfig
       }
     },
     methods: {
