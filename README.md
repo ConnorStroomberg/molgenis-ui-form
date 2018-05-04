@@ -149,14 +149,14 @@ const data = {
 ### Type support
 We support most HTML input types like number, text, and email. Below is a list of supported types.
 
-| type | renders |
-|------|-------------|
+| type | renders | notes |
+|------|-------------|-------------- |
 | radios | A list of radio buttons |
 | single-select | A Vue Multiselect dropdown which supports asynchronous and synchronous option lists
 | number | A HTML5 number input |
 | text-area | A textarea HTML element |
-| date | A Vue Flatpickr Date component |
-| date-time | A Vue Flatpickr Date component with 'enableTime = true' |
+| date | A Vue Flatpickr Date component | data format:  "YYYY-MM-DD" 
+| date-time | A Vue Flatpickr Date component with 'enableTime = true' | data format:  "YYYY-MM-DDTHH:mm:ssZZ"
 | checkboxes | A list of checkboxes |
 | text | A HTML5 text input |
 | url | A HTML5 text url |
