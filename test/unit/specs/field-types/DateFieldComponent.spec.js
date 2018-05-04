@@ -50,8 +50,8 @@ describe('DateFieldComponent', () => {
         const expectedDateValue = date
         wrapper.setData({localValue: date})
 
-        expect(wrapper.emitted().input[1]).to.deep.equal([expectedDateValue])
-        expect(wrapper.emitted().dataChange[1]).to.deep.equal([])
+        expect(wrapper.emitted().input[0]).to.deep.equal([expectedDateValue])
+        expect(wrapper.emitted().dataChange[0]).to.deep.equal([])
       })
     })
 
@@ -109,8 +109,8 @@ describe('DateFieldComponent', () => {
         const expectedDateTimeValue = date
         wrapper.setData({localValue: date})
 
-        expect(wrapper.emitted().input[1]).to.deep.equal([expectedDateTimeValue])
-        expect(wrapper.emitted().dataChange[1]).to.deep.equal([])
+        expect(wrapper.emitted().input[0]).to.deep.equal([expectedDateTimeValue])
+        expect(wrapper.emitted().dataChange[0]).to.deep.equal([])
       })
     })
 

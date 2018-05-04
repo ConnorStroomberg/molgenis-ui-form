@@ -14,6 +14,7 @@
           :aria-describedby="field.id + '-description'"
           :required="isRequired"
           :disabled="field.disabled"
+          @on-change="onDatePickerChange"
         >
         </flat-pickr>
 
@@ -32,6 +33,10 @@
         </div>
       </div>
 
+      <small>
+        {{ localValue }}
+      </small>
+
       <small :id="field.id + '-description'" class="form-text text-muted">
         {{ field.description }}
       </small>
@@ -49,6 +54,21 @@
   import flatPickr from 'vue-flatpickr-component'
   import 'flatpickr/dist/flatpickr.css'
   import moment from 'moment'
+  import { Portuguese } from 'flatpickr/dist/l10n/pt.js'
+  import { Spanish } from 'flatpickr/dist/l10n/es.js'
+  import { Italian } from 'flatpickr/dist/l10n/it.js'
+  import { French } from 'flatpickr/dist/l10n/fr.js'
+  import { Dutch } from 'flatpickr/dist/l10n/nl.js'
+  import { German } from 'flatpickr/dist/l10n/de.js'
+
+  const flatpickerLangMap = {
+    pt: Portuguese,
+    es: Spanish,
+    it: Italian,
+    fr: French,
+    nl: Dutch,
+    de: German
+  }
 
   const USE_STRICT_MODE = true
 
@@ -83,22 +103,17 @@
       }
     },
     data () {
-      const serverFormat = this.isTimeIncluded ? 'YYYY-MM-DDTHH:mm:ssZZ' : 'YYYY-MM-DD'
-      const momentDisplayFormat = this.isTimeIncluded ? 'MMM D, YYYY h:m:s' : 'MMM D, YYYY'
-      const flatPickerDisplayFormat = this.isTimeIncluded ? 'M j, Y h:i:s' : 'M j, Y'
-
       return {
         // Store a local value to prevent changing the parent state
         localValue: this.value,
         flatPickerDate: null, // model for flatpicker component
-        serverFormat,
-        momentDisplayFormat,
-        flatPickerDisplayFormat,
+        serverFormat: this.isTimeIncluded ? 'YYYY-MM-DDTHH:mm:ssZZ' : 'YYYY-MM-DD',
         config: {
+          locale: flatpickerLangMap[this.$lng || 'en'],
           wrap: true,
-          allowInput: true,
+          allowInput: false,
           enableTime: this.isTimeIncluded,
-          dateFormat: flatPickerDisplayFormat
+          dateFormat: this.isTimeIncluded ? 'M j, Y h:i:S K' : 'M j, Y'
         }
       }
     },
@@ -115,15 +130,6 @@
       },
 
       /**
-       * Convert a string used in the frontend to a JavaScript Date object.
-       * @param displayValue string representing a date(-time)
-       * @returns {Date}
-       */
-      toServerValue (displayValue) {
-        return moment(displayValue, this.momentDisplayFormat, USE_STRICT_MODE).toDate()
-      },
-
-      /**
        * Validates a date (string or date object) to see if it is a proper date.
        *
        * @param inputValue
@@ -136,18 +142,13 @@
           const date = typeof inputValue === 'string' ? this.getDateFromDateString(inputValue) : inputValue
           return date != null && moment.utc(date).isValid()
         }
-      }
-    },
-    watch: {
-      localValue (value) {
-        this.$emit('input', value)
-        this.$emit('dataChange')
       },
-      flatPickerDate (newValue) {
-        if (newValue === '') {
+
+      onDatePickerChange (selectedDates) {
+        if (selectedDates.length === 0) {
           this.localValue = null
         } else {
-          const newDate = typeof newValue === 'string' ? this.toServerValue(newValue) : newValue
+          const newDate = selectedDates[0]
           if (this.isValidDateTime(newDate)) {
             this.localValue = new Date(newDate.getTime())
           } else {
@@ -155,11 +156,17 @@
           }
         }
       }
+
+    },
+    watch: {
+      localValue (value) {
+        this.$emit('input', value)
+        this.$emit('dataChange')
+      }
     },
     created () {
       if (this.value !== undefined) {
-        const utcMomentDateTime = moment.utc(this.value)
-        this.flatPickerDate = utcMomentDateTime.toDate()
+        this.flatPickerDate = moment.utc(this.value).toDate()
       }
     },
     components: {
