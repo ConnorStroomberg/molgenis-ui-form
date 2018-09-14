@@ -248,6 +248,39 @@ const isValid = (attribute): ((?Object) => boolean) => {
   return expression ? (data) => evaluator(expression, data) : () => true
 }
 
+const isUnique = (attribute): (() => Promise<Boolean>) => {
+  if (!attribute.unique) {
+    // no need to check uniqueness if uniqueness is not required
+    return (): Promise<Boolean> => Promise.resolve(true)
+  }
+
+  return (data) => {
+    let queryValue
+
+    switch (attribute.fieldType) {
+      case 'CATEGORICAL':
+      case 'XREF':
+        queryValue = data[attribute.refEntity.idAttribute]
+        break
+      case 'CATEGORICAL_MREF':
+      case 'MREF':
+      case 'ONE_TO_MANY':
+        queryValue = data.map((item) => item[attribute.refEntity.idAttribute])
+        break
+      default:
+        queryValue = data
+        break
+    }
+
+    const rules = [{field: attribute.name, operator: 'EQUALS', value: queryValue}]
+
+    return api.get(this.state.entity.hrefCollection, {q: {q: rules}}).then((response) => {
+      return response.isTrue ? Promise.resolve(true) : Promise.resolve(false)
+    })
+  }
+
+}
+
 /**
  * Determine if field should be disabled
  * @param attribute
@@ -286,7 +319,8 @@ const generateFormSchemaField = (attribute, mapperOptions: MapperSettings): Form
     disabled: isDisabled,
     readOnly: isDisabled,
     visible: isVisible(attribute),
-    validate: isValid(attribute)
+    validate: isValid(attribute),
+    unique: isUnique(attribute)
   }
 
   if (attribute.fieldType === 'COMPOUND') {
