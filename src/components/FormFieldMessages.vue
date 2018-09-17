@@ -6,6 +6,7 @@
     <div class="invalid-message" slot="integer">{{ notAValidIntegerMsg }}</div>
     <div class="invalid-message" slot="long">{{ notAValidLongMsg }}</div>
     <div class="invalid-message" slot="number">{{ notAValidNumberMsg }}</div>
+    <div class="invalid-message" slot="unique">Must be unique msg placeholder</div>
     <div class="invalid-message" slot="validate">{{ validationFailedMsg }}</div>
     <div v-if="range" class="invalid-message" slot="range">
       <span v-if="range.hasOwnProperty('min') && range.hasOwnProperty('max')">{{ notWithInRangeMsg }} ({{ range.min }} - {{ range.max }})</span>

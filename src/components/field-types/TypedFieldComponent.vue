@@ -63,6 +63,10 @@
         type: Boolean,
         default: false
       },
+      isUnique: {
+        type: Promise,
+        default: () => Promise.resolve(true)
+      },
       inputDebounceTime: {
         type: Number,
         default: debounceTime
@@ -93,7 +97,10 @@
     },
     computed: {
       customValidation () {
-        let validate = {'validate': this.isValid}
+        let validate = {
+          'validate': this.isValid,
+          'unique': this.isUnique
+        }
         if (this.isNumberField(this.field)) {
           if (this.field.type === 'integer') {
             validate = { ...validate, integer: this.isCompatibleWithJavaInt() }

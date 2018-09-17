@@ -135,6 +135,7 @@
         :fieldState="formState[field.id]"
         :isValid="isValid"
         :isRequired="isRequired"
+        :isUnique="isUnique"
         :inputDebounceTime="formComponentOptions.inputDebounceTime"
         @dataChange="onDataChange">
       </typed-field-component>
@@ -228,6 +229,9 @@
     computed: {
       isValid () {
         return this.field.validate(this.formData)
+      },
+      isUnique () {
+        return this.field.unique(this.formData)
       },
       isRequired () {
         return this.field.required(this.formData)

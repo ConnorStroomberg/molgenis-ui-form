@@ -49,10 +49,12 @@ module.exports = {
     cssSourceMap: false,
     before(app) {
       app.get('/api/v1/it_emx_datatypes_TypeTestRef', function (req, res) {
+        console.log('match v1')
         res.json(mockResponse)
       })
 
       app.get('/api/v2/it_emx_datatypes_TypeTestRef', function (req, res) {
+        console.log('match v2')
         res.json(mockResponse)
       })
 
@@ -75,6 +77,14 @@ module.exports = {
         }
         res.json(localizedMessages)
       })
+
+      // mock unique test response
+      app.get('/api/v2/it_emx_datatypes_TypeTest', function (req, res) {
+        console.log(req.query)
+        const result = req.query.q === 'string==\'string value\';id!=123-abc' ? {items: []} : {items: [{foo: 'bar'}]}
+        res.json(result)
+      })
+
     }
   },
 
