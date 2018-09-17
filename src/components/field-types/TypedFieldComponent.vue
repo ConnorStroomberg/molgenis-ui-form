@@ -1,5 +1,5 @@
 <template>
-  <validate :state="fieldState" :custom="customValidation">
+  <validate :state="fieldState" :custom="{validate: isValid, unique: isUnique, integer: isValidInt, long: isValidLong, range: isValidRange}">
     <div class="form-group">
       <label :for="field.id">{{ field.label }}</label>
 
@@ -64,8 +64,8 @@
         default: false
       },
       isUnique: {
-        type: Promise,
-        default: () => Promise.resolve(true)
+        type: Function,
+        default: () => true
       },
       inputDebounceTime: {
         type: Number,
@@ -75,7 +75,6 @@
     mixins: [VueForm],
     data () {
       return {
-        // Store a local value to prevent changing the parent state
         localValue: this.value
       }
     },
@@ -96,25 +95,6 @@
       }, debounceTime)
     },
     computed: {
-      customValidation () {
-        let validate = {
-          'validate': this.isValid,
-          'unique': this.isUnique
-        }
-        if (this.isNumberField(this.field)) {
-          if (this.field.type === 'integer') {
-            validate = { ...validate, integer: this.isCompatibleWithJavaInt() }
-          } else if (this.field.type === 'long') {
-            validate = { ...validate, long: this.isCompatibleWithJavaLong() }
-          }
-        }
-
-        if (this.isNumberField(this.field) && this.field.range) {
-          validate = { ...validate, range: this.isWithinRange }
-        }
-
-        return validate
-      },
       stepSize () {
         // Conditionally add step size, return false to omit step attribute
         return (this.field.type === 'integer' || this.field.type === 'long') ? 1 : false
@@ -124,24 +104,46 @@
       }
     },
     methods: {
-      isWithinRange () {
-        if (this.field.range.hasOwnProperty('min') && this.localValue < this.field.range.min) {
+      isNumberField (field) {
+        return field.type === 'integer' || field.type === 'long' || field.type === 'decimal'
+      },
+      isValidInt (value) {
+        if (this.field.type !== 'integer') {
+          return true
+        }
+
+        if (Number.isNaN(value)) {
           return false
         }
-        if (this.field.range.hasOwnProperty('max') && this.localValue > this.field.range.max) {
+        const numberValue = Number(value)
+        return Number.isSafeInteger(numberValue) && numberValue <= MAX_JAVA_INT && numberValue >= MIN_JAVA_INT
+      },
+      isValidLong (value) {
+        if (this.field.type !== 'long') {
+          return true
+        }
+        if (Number.isNaN(value)) {
+          return false
+        }
+        const numberValue = Number(value)
+        return Number.isInteger(numberValue)
+      },
+      isValidRange (value) {
+        if (!this.isNumberField(this.field) || !this.field.range) {
+          return true
+        }
+        if (Number.isNaN(value)) {
+          return false
+        }
+        const numberValue = Number(value)
+        if (this.field.range.hasOwnProperty('min') && numberValue < this.field.range.min) {
+          return false
+        }
+        if (this.field.range.hasOwnProperty('max') && numberValue > this.field.range.max) {
           return false
         }
 
         return true
-      },
-      isCompatibleWithJavaInt () {
-        return Number.isSafeInteger(this.value) && this.value <= MAX_JAVA_INT && this.value >= MIN_JAVA_INT
-      },
-      isCompatibleWithJavaLong () {
-        return Number.isInteger(this.value)
-      },
-      isNumberField (field) {
-        return field.type === 'integer' || field.type === 'long' || field.type === 'decimal'
       }
     },
     created () {

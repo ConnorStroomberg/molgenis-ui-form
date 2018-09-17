@@ -224,14 +224,21 @@
     methods: {
       onDataChange () {
         this.$emit('dataChange')
+      },
+      isUnique (value) {
+        if (this.field.unique) {
+          const asyncUniqueFunc = this.field.unique
+          return new Promise((resolve) => {
+            asyncUniqueFunc(value, resolve)
+          })
+        }
+        // if no function has been set the validator is always valid
+        return true
       }
     },
     computed: {
       isValid () {
         return this.field.validate(this.formData)
-      },
-      isUnique () {
-        return this.field.unique(this.formData)
       },
       isRequired () {
         return this.field.required(this.formData)
