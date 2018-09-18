@@ -76,10 +76,7 @@
     },
     watch: {
       localValue: debounce(function (value) {
-        /*
-        Do not convert NaN field to number to allow for validation to generate warning
-         */
-        if (this.isNumberField(this.field) && !Number.isNaN(value)) {
+        if (this.isNumberField && !Number.isNaN(Number(value))) {
           this.$emit('input', Number(value))
         } else {
           this.$emit('input', value)
