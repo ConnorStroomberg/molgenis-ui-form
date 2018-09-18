@@ -253,10 +253,10 @@ const isValid = (attribute): ((?Object) => boolean) => {
 const isUnique = (attribute, entityMetadata: any, mapperOptions: MapperSettings): (() => Promise<boolean>) => {
   if (!attribute.unique) {
     // no need to check uniqueness if uniqueness is not required
-    return () => Promise.resolve(true)
+    return (data: any, resolve: any) => resolve(true)
   }
 
-  return (data: any) => {
+  return (data: any, resolve: any) => {
     let queryValue
     const fieldValue = data[attribute.name]
 
@@ -293,7 +293,7 @@ const isUnique = (attribute, entityMetadata: any, mapperOptions: MapperSettings)
 
     const testUniqueUrl = entityMetadata.hrefCollection + '?&num=1&q=' + encodeRsqlValue(rsql)
     return api.get(testUniqueUrl).then((response) => {
-      return response.items.length <= 0
+      resolve(response.items.length <= 0)
     }, () => {
       console.log('error')
     })

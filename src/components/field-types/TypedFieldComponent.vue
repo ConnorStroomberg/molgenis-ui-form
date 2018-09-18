@@ -1,5 +1,5 @@
 <template>
-  <validate :state="fieldState" :custom="{validate: isValid, unique: isUnique, integer: isValidInt, long: isValidLong, range: isValidRange}">
+  <validate :state="fieldState" :custom="{validate: isValid, integer: isValidInt, long: isValidLong, range: isValidRange, unique: testUnique}">
     <div class="form-group">
       <label :for="field.id">{{ field.label }}</label>
 
@@ -63,10 +63,6 @@
         type: Boolean,
         default: false
       },
-      isUnique: {
-        type: Function,
-        default: () => true
-      },
       inputDebounceTime: {
         type: Number,
         default: debounceTime
@@ -104,6 +100,19 @@
       }
     },
     methods: {
+      testUnique () {
+        const data = this.localValue
+        if (this.field.unique) {
+          const testFunction = this.field.unique
+          return new Promise((resolve) => {
+            testFunction(data, resolve)
+          })
+        } else {
+          return new Promise((resolve) => {
+            resolve(true)
+          })
+        }
+      },
       isNumberField (field) {
         return field.type === 'integer' || field.type === 'long' || field.type === 'decimal'
       },

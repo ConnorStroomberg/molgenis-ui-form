@@ -135,7 +135,6 @@
         :fieldState="formState[field.id]"
         :isValid="isValid"
         :isRequired="isRequired"
-        :isUnique="isUnique"
         :inputDebounceTime="formComponentOptions.inputDebounceTime"
         @dataChange="onDataChange">
       </typed-field-component>
@@ -224,16 +223,6 @@
     methods: {
       onDataChange () {
         this.$emit('dataChange')
-      },
-      isUnique (value) {
-        if (this.field.unique) {
-          const asyncUniqueFunc = this.field.unique
-          return new Promise((resolve) => {
-            asyncUniqueFunc(value, resolve)
-          })
-        }
-        // if no function has been set the validator is always valid
-        return true
       }
     },
     computed: {
