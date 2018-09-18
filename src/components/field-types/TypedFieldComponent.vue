@@ -80,10 +80,7 @@
     },
     watch: {
       localValue: debounce(function (value) {
-        /*
-        Do not convert NaN field to number to allow for validation to generate warning
-         */
-        if (this.isNumberField(this.field) && !Number.isNaN(value)) {
+        if (this.isNumberField && !Number.isNaN(Number(value))) {
           this.$emit('input', Number(value))
         } else {
           this.$emit('input', value)
@@ -100,42 +97,38 @@
         return (this.field.type === 'integer' || this.field.type === 'long') ? 1 : false
       },
       inputType () {
-        return this.isNumberField(this.field) ? 'number' : this.field.type
-      }
-    },
-    methods: {
-      isNumberField (field) {
-        return field.type === 'integer' || field.type === 'long' || field.type === 'decimal'
+        return this.isNumberField ? 'number' : this.field.type
       },
-      isValidInt (value) {
+      isNumberField () {
+        return this.field.type === 'integer' || this.field.type === 'long' || this.field.type === 'decimal'
+      },
+      isValidInt () {
         if (this.field.type !== 'integer') {
           return true
         }
 
-        if (Number.isNaN(value)) {
-          return false
-        }
-        const numberValue = Number(value)
-        return Number.isSafeInteger(numberValue) && numberValue <= MAX_JAVA_INT && numberValue >= MIN_JAVA_INT
+        const numberValue = Number(this.value)
+        return !Number.isNaN(numberValue) && Number.isSafeInteger(numberValue) && numberValue <= MAX_JAVA_INT &&
+          numberValue >= MIN_JAVA_INT
       },
-      isValidLong (value) {
+      isValidLong () {
         if (this.field.type !== 'long') {
           return true
         }
-        if (Number.isNaN(value)) {
-          return false
-        }
-        const numberValue = Number(value)
-        return Number.isInteger(numberValue)
+
+        const numberValue = Number(this.value)
+        return !Number.isNaN(numberValue) && Number.isInteger(numberValue)
       },
-      isValidRange (value) {
-        if (!this.isNumberField(this.field) || !this.field.range) {
+      isValidRange () {
+        if (!this.isNumberField || !this.field.range) {
           return true
         }
-        if (Number.isNaN(value)) {
+
+        const numberValue = Number(this.value)
+        if (Number.isNaN(numberValue)) {
           return false
         }
-        const numberValue = Number(value)
+
         if (this.field.range.hasOwnProperty('min') && numberValue < this.field.range.min) {
           return false
         }
