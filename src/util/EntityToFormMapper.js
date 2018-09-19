@@ -253,25 +253,24 @@ const isValid = (attribute): ((?Object) => boolean) => {
 const isUnique = (attribute, entityMetadata: any, mapperOptions: MapperSettings): (() => Promise<boolean>) => {
   if (!attribute.unique) {
     // no need to check uniqueness if uniqueness is not required
-    return (data: any, resolve: any) => resolve(true)
+    return (proposedValue: any, data: any, resolve: any) => resolve(true)
   }
 
-  return (data: any, resolve: any) => {
+  return (proposedValue: any, data: any, resolve: any) => {
     let queryValue
-    const fieldValue = data[attribute.name]
 
     switch (attribute.fieldType) {
       case 'CATEGORICAL':
       case 'XREF':
-        queryValue = fieldValue[attribute.refEntity.idAttribute]
+        queryValue = proposedValue[attribute.refEntity.idAttribute]
         break
       case 'CATEGORICAL_MREF':
       case 'MREF':
       case 'ONE_TO_MANY':
-        queryValue = fieldValue.map((item) => item[attribute.refEntity.idAttribute])
+        queryValue = proposedValue.map((item) => item[attribute.refEntity.idAttribute])
         break
       default:
-        queryValue = fieldValue
+        queryValue = proposedValue
         break
     }
 
@@ -284,7 +283,7 @@ const isUnique = (attribute, entityMetadata: any, mapperOptions: MapperSettings)
           {
             selector: entityMetadata.idAttribute,
             comparison: '!=',
-            arguments: data[entityMetadata.idAttribute]
+            arguments: data[entityMetadata.idAttribute] // to validate uniqueness in update mode there must be a id value present
           }
         ]
       }

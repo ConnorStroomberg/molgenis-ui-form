@@ -1,5 +1,5 @@
 <template>
-  <validate :state="fieldState" :custom="{validate: isValid, integer: isValidInt, long: isValidLong, range: isValidRange, unique: testUnique}">
+  <validate :state="fieldState" :custom="{validate: isValid, integer: isValidInt, long: isValidLong, range: isValidRange, unique: isUnique}">
     <div class="form-group">
       <label :for="field.id">{{ field.label }}</label>
 
@@ -59,6 +59,10 @@
         type: Boolean,
         default: true
       },
+      isUnique: {
+        type: Function,
+        default: () => true
+      },
       isRequired: {
         type: Boolean,
         default: false
@@ -93,55 +97,17 @@
         return (this.field.type === 'integer' || this.field.type === 'long') ? 1 : false
       },
       inputType () {
-        return this.isNumberField(this.field) ? 'number' : this.field.type
-      }
-    },
-    methods: {
-      testUnique () {
-        const data = this.localValue
-        if (this.field.unique) {
-          const testFunction = this.field.unique
-          return new Promise((resolve) => {
-            testFunction(data, resolve)
-          })
-        } else {
-          return new Promise((resolve) => {
-            resolve(true)
-          })
-        }
+        return this.isNumberField ? 'number' : this.field.type
       },
-      isNumberField (field) {
-        return field.type === 'integer' || field.type === 'long' || field.type === 'decimal'
-      },
-      isValidInt (value) {
-        if (this.field.type !== 'integer') {
+      isValidRange () {
+        if (!this.isNumberField || !this.field.range) {
           return true
         }
 
-        if (Number.isNaN(value)) {
+        const numberValue = Number(this.localValue)
+        if (Number.isNaN(numberValue)) {
           return false
         }
-        const numberValue = Number(value)
-        return Number.isSafeInteger(numberValue) && numberValue <= MAX_JAVA_INT && numberValue >= MIN_JAVA_INT
-      },
-      isValidLong (value) {
-        if (this.field.type !== 'long') {
-          return true
-        }
-        if (Number.isNaN(value)) {
-          return false
-        }
-        const numberValue = Number(value)
-        return Number.isInteger(numberValue)
-      },
-      isValidRange (value) {
-        if (!this.isNumberField(this.field) || !this.field.range) {
-          return true
-        }
-        if (Number.isNaN(value)) {
-          return false
-        }
-        const numberValue = Number(value)
         if (this.field.range.hasOwnProperty('min') && numberValue < this.field.range.min) {
           return false
         }
@@ -150,6 +116,30 @@
         }
 
         return true
+      },
+      isValidInt () {
+        if (this.field.type !== 'integer') {
+          return true
+        }
+
+        const numberValue = Number(this.localValue)
+        if (Number.isNaN(this.localValue)) {
+          return false
+        }
+        return Number.isSafeInteger(numberValue) && numberValue <= MAX_JAVA_INT && numberValue >= MIN_JAVA_INT
+      },
+      isValidLong () {
+        if (this.field.type !== 'long') {
+          return true
+        }
+        const numberValue = Number(this.localValue)
+        if (Number.isNaN(this.localValue)) {
+          return false
+        }
+        return Number.isInteger(numberValue)
+      },
+      isNumberField () {
+        return this.field.type === 'integer' || this.field.type === 'long' || this.field.type === 'decimal'
       }
     },
     created () {
