@@ -204,13 +204,13 @@ describe('FormFieldComponents unit tests', () => {
       validate: (data) => true,
       required: () => true,
       visible: () => true,
-      unique: (a, b, resolve) => {
-        resolve(true)
+      unique: (resolve, reject, valueToTest, context) => {
+        resolve(valueToTest === 'test-value' && context.id === 'abc')
       }
     }
 
     const propsData = {
-      formData: {'string': 'data'},
+      formData: {'string': 'data', id: 'abc'},
       field: field,
       formState: formState,
       showOptionalFields: false
@@ -221,10 +221,12 @@ describe('FormFieldComponents unit tests', () => {
     })
 
     it('should return a promise that resolve to a boolean', (done) => {
-      const promise = wrapper.vm.isUnique('test')
+      const promise = wrapper.vm.isUnique('test-value')
       promise.then((result) => {
         expect(result).to.equal(true)
         done()
+      }, (error) => {
+        console.log(error)
       })
     })
   })

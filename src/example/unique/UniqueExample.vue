@@ -52,7 +52,7 @@
             visible: () => true,
             required: () => false,
             validate: () => true,
-            unique: (proposedValue, data, resolve) => {
+            unique: (resolve, reject, proposedValue) => {
               setTimeout(() => {
                 resolve(proposedValue !== 'test')
               }, 500)

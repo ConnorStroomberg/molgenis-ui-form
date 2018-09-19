@@ -253,10 +253,10 @@ const isValid = (attribute): ((?Object) => boolean) => {
 const isUnique = (attribute, entityMetadata: any, mapperOptions: MapperSettings): (() => Promise<boolean>) => {
   if (!attribute.unique) {
     // no need to check uniqueness if uniqueness is not required
-    return (proposedValue: any, data: any, resolve: any) => resolve(true)
+    return (resolve: any) => resolve(true)
   }
 
-  return (proposedValue: any, data: any, resolve: any) => {
+  return (resolve: any, reject: any, proposedValue: any, data: any) => {
     let queryValue
 
     switch (attribute.fieldType) {
@@ -293,8 +293,8 @@ const isUnique = (attribute, entityMetadata: any, mapperOptions: MapperSettings)
     const testUniqueUrl = entityMetadata.hrefCollection + '?&num=1&q=' + encodeRsqlValue(rsql)
     return api.get(testUniqueUrl).then((response) => {
       resolve(response.items.length <= 0)
-    }, () => {
-      console.log('error')
+    }, (error) => {
+      reject(error)
     })
   }
 }
@@ -302,16 +302,21 @@ const isUnique = (attribute, entityMetadata: any, mapperOptions: MapperSettings)
 /**
  * Determine if field should be disabled
  * @param attribute
+ * @param entityMetaData
  * @param mapperOptions
  * @returns boolean
  */
-const isDisabledField = (attribute, mapperOptions: MapperSettings): boolean => {
+const isDisabledField = (attribute, entityMetaData, mapperOptions: MapperSettings): boolean => {
   if (attribute.fieldType === 'ONE_TO_MANY') {
     return true
   }
 
   if (mapperOptions.mapperMode === 'CREATE') {
     return false
+  }
+
+  if (mapperOptions.mapperMode === 'UPDATE' && attribute.name === entityMetaData.idAttribute) {
+    return true
   }
 
   return attribute.readOnly
@@ -328,7 +333,7 @@ const isDisabledField = (attribute, mapperOptions: MapperSettings): boolean => {
 const generateFormSchemaField = (attribute, entityMetadata:any, mapperOptions: MapperSettings): FormField => {
   // options is a function that always returns an array of option objects
   const options = getFieldOptions(attribute, mapperOptions)
-  const isDisabled = isDisabledField(attribute, mapperOptions)
+  const isDisabled = isDisabledField(attribute, entityMetadata, mapperOptions)
   let fieldProperties = {
     id: attribute.name,
     label: attribute.label,
