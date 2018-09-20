@@ -250,7 +250,17 @@ const isValid = (attribute): ((?Object) => boolean) => {
   return expression ? (data) => evaluator(expression, data) : () => true
 }
 
-const isUnique = (attribute, entityMetadata: any, mapperOptions: MapperSettings): (() => Promise<boolean>) => {
+/**
+ * Construct function that queries backend to check for uniqueness.
+ * Returned function is expected to the called with resolve and reject functions to handle async callback and
+ * proposedValue to verify uniqueness for. When runnig the mapper in update mode the optional data param is expected to
+ * contain the id value of the entity to be updated.
+ * @param attribute
+ * @param entityMetadata
+ * @param mapperOptions
+ * @returns {*}
+ */
+const buildIsUniqueFunction = (attribute, entityMetadata: any, mapperOptions: MapperSettings): (() => Promise<boolean>) => {
   if (!attribute.unique) {
     // no need to check uniqueness if uniqueness is not required
     return (resolve: any) => resolve(true)
@@ -288,9 +298,8 @@ const isUnique = (attribute, entityMetadata: any, mapperOptions: MapperSettings)
         ]
       }
     }
-    let rsql = transformToRSQL(query)
 
-    const testUniqueUrl = entityMetadata.hrefCollection + '?&num=1&q=' + encodeRsqlValue(rsql)
+    const testUniqueUrl = entityMetadata.hrefCollection + '?&num=1&q=' + encodeRsqlValue(transformToRSQL(query))
     return api.get(testUniqueUrl).then((response) => {
       resolve(response.items.length <= 0)
     }, (error) => {
@@ -344,7 +353,7 @@ const generateFormSchemaField = (attribute, entityMetadata:any, mapperOptions: M
     readOnly: isDisabled,
     visible: isVisible(attribute),
     validate: isValid(attribute),
-    unique: isUnique(attribute, entityMetadata, mapperOptions)
+    unique: buildIsUniqueFunction(attribute, entityMetadata, mapperOptions)
   }
 
   if (attribute.fieldType === 'COMPOUND') {
