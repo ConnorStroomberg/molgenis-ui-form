@@ -264,30 +264,32 @@ const buildIsUniqueFunction = (attribute, entityMetadata: any, mapperOptions: Ma
   // no need to check uniqueness if uniqueness is not required, or uniqueness check not supported for field type
   // todo maybe add support for multi value field types
   if (!attribute.unique || attribute.fieldType === 'CATEGORICAL_MREF' || attribute.fieldType === 'MREF' || attribute.fieldType === 'ONE_TO_MANY') {
-    return (resolve: any) => resolve(true)
+    return () => Promise.resolve(true)
   }
 
-  return (resolve: any, reject: any, proposedValue: any, data: any) => {
-    let query = {selector: attribute.name, comparison: '==', arguments: proposedValue}
-    if (mapperOptions.mapperMode === 'UPDATE') {
-      query = {
-        operator: 'AND',
-        operands: [
-          query,
-          {
-            selector: entityMetadata.idAttribute,
-            comparison: '!=',
-            arguments: data[entityMetadata.idAttribute] // to validate uniqueness in update mode there must be a id value present
-          }
-        ]
+  return (proposedValue: any, data: any) => {
+    return new Promise((resolve, reject) => {
+      let query = {selector: attribute.name, comparison: '==', arguments: proposedValue}
+      if (mapperOptions.mapperMode === 'UPDATE') {
+        query = {
+          operator: 'AND',
+          operands: [
+            query,
+            {
+              selector: entityMetadata.idAttribute,
+              comparison: '!=',
+              arguments: data[entityMetadata.idAttribute] // to validate uniqueness in update mode there must be a id value present
+            }
+          ]
+        }
       }
-    }
 
-    const testUniqueUrl = entityMetadata.hrefCollection + '?&num=1&q=' + encodeRsqlValue(transformToRSQL(query))
-    return api.get(testUniqueUrl).then((response) => {
-      resolve(response.items.length <= 0)
-    }, (error) => {
-      reject(error)
+      const testUniqueUrl = entityMetadata.hrefCollection + '?&num=1&q=' + encodeRsqlValue(transformToRSQL(query))
+      return api.get(testUniqueUrl).then((response) => {
+        resolve(response.items.length <= 0)
+      }, (error) => {
+        reject(error)
+      })
     })
   }
 }

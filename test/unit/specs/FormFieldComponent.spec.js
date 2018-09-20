@@ -204,8 +204,10 @@ describe('FormFieldComponents unit tests', () => {
       validate: (data) => true,
       required: () => true,
       visible: () => true,
-      unique: (resolve, reject, valueToTest, context) => {
-        resolve(valueToTest === 'test-value' && context.id === 'abc')
+      unique: (valueToTest, context) => {
+        return new Promise((resolve, reject) => {
+          resolve(valueToTest === 'test-value' && context.id === 'abc')
+        })
       }
     }
 

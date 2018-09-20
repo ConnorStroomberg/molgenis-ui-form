@@ -228,11 +228,7 @@
       },
       isUnique (value) {
         if (this.field.hasOwnProperty('unique')) {
-          const testFunction = this.field.unique
-          const formData = this.formData
-          return new Promise((resolve, reject) => {
-            testFunction(resolve, reject, value, formData)
-          })
+          return this.field.unique(value, this.formData)
         }
 
         return true

@@ -52,10 +52,12 @@
             visible: () => true,
             required: () => false,
             validate: () => true,
-            unique: (resolve, reject, proposedValue) => {
-              setTimeout(() => {
-                resolve(proposedValue !== 'test')
-              }, 500)
+            unique: (proposedValue) => {
+              return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  resolve(proposedValue !== 'test')
+                }, 500)
+              })
             }
           }
         ],

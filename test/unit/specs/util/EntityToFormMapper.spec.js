@@ -928,9 +928,7 @@ describe('Entity to state mapper', () => {
       const form = EntityToFormMapper.generateForm(schemas.uniqueFieldSchema, data, {mapperMode: 'CREATE'})
 
       it('should return a function that resolve for true in case of unique value', (done) => {
-        const promise = new Promise((resolve, reject) => {
-          form.formFields[0].unique(resolve, reject, 'am i unique?', {id: '123'})
-        })
+        const promise = form.formFields[0].unique('am i unique?', {id: '123'})
 
         promise.then((result) => {
           expect(result).to.equal(true)
@@ -946,9 +944,7 @@ describe('Entity to state mapper', () => {
       const form = EntityToFormMapper.generateForm(schemas.uniqueFieldSchema, data, {mapperMode: 'UPDATE'})
 
       it('should return a function that when querying the backend should exclude the row being updated', (done) => {
-        const promise = new Promise((resolve, reject) => {
-          form.formFields[0].unique(resolve, reject, 'i am not unique?', {id: '123'})
-        })
+        const promise = form.formFields[0].unique('i am not unique?', {id: '123'})
 
         promise.then((result) => {
           expect(result).to.equal(true)
