@@ -82,6 +82,7 @@
         :fieldState="formState[field.id]"
         :isValid="isValid"
         :isRequired="isRequired"
+        :isUnique="isUnique"
         @dataChange="onDataChange">
       </radio-field-component>
     </template>

@@ -261,30 +261,14 @@ const isValid = (attribute): ((?Object) => boolean) => {
  * @returns {*}
  */
 const buildIsUniqueFunction = (attribute, entityMetadata: any, mapperOptions: MapperSettings): (() => Promise<boolean>) => {
-  if (!attribute.unique) {
-    // no need to check uniqueness if uniqueness is not required
+  // no need to check uniqueness if uniqueness is not required, or uniqueness check not supported for field type
+  // todo maybe add support for multi value field types
+  if (!attribute.unique || attribute.fieldType === 'CATEGORICAL_MREF' || attribute.fieldType === 'MREF' || attribute.fieldType === 'ONE_TO_MANY') {
     return (resolve: any) => resolve(true)
   }
 
   return (resolve: any, reject: any, proposedValue: any, data: any) => {
-    let queryValue
-
-    switch (attribute.fieldType) {
-      case 'CATEGORICAL':
-      case 'XREF':
-        queryValue = proposedValue[attribute.refEntity.idAttribute]
-        break
-      case 'CATEGORICAL_MREF':
-      case 'MREF':
-      case 'ONE_TO_MANY':
-        queryValue = proposedValue.map((item) => item[attribute.refEntity.idAttribute])
-        break
-      default:
-        queryValue = proposedValue
-        break
-    }
-
-    let query = {selector: attribute.name, comparison: '==', arguments: queryValue}
+    let query = {selector: attribute.name, comparison: '==', arguments: proposedValue}
     if (mapperOptions.mapperMode === 'UPDATE') {
       query = {
         operator: 'AND',
