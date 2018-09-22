@@ -69,7 +69,8 @@
         :isValid="isValid"
         :isRequired="isRequired"
         @dataChange="onDataChange"
-        :allowAddingOptions="formComponentOptions.allowAddingOptions">
+        :allowAddingOptions="formComponentOptions.allowAddingOptions"
+        :noOptionsMessage="noOptionsMessage">
       </multi-select-field-component>
     </template>
 
@@ -95,7 +96,8 @@
         :isRequired="isRequired"
         :isValid="isValid"
         @dataChange="onDataChange"
-        :allowAddingOptions="formComponentOptions.allowAddingOptions">
+        :allowAddingOptions="formComponentOptions.allowAddingOptions"
+        :noOptionsMessage="noOptionsMessage">
       </single-select-field-component>
     </template>
 
@@ -107,6 +109,7 @@
         :fieldState="formState[field.id]"
         :isValid="isValid"
         :isRequired="isRequired"
+        :inputDebounceTime="formComponentOptions.inputDebounceTime"
         @dataChange="onDataChange">
       </text-area-field-component>
     </template>
@@ -124,7 +127,7 @@
       </date-field-component>
     </template>
 
-    <!-- Render email, url, password, number, and text fields -->
+    <!-- Render email, url, password, integer, long, decimal, and text fields -->
     <template v-else>
       <typed-field-component
         v-model="formData[field.id]"
@@ -132,6 +135,7 @@
         :fieldState="formState[field.id]"
         :isValid="isValid"
         :isRequired="isRequired"
+        :inputDebounceTime="formComponentOptions.inputDebounceTime"
         @dataChange="onDataChange">
       </typed-field-component>
     </template>
@@ -176,6 +180,8 @@
   import { FormField, FormComponentOptions } from '../flow.types'
   import isCompoundVisible from '../util/helpers/isCompoundVisible'
 
+  const defaultNoOptionsMessage = 'No options found for given search term.'
+
   export default {
     name: 'FormFieldComponent',
     props: {
@@ -208,7 +214,9 @@
         type: FormComponentOptions,
         required: false,
         default: () => {
-          return {}
+          return {
+            inputDebounceTime: 500
+          }
         }
       }
     },
@@ -229,6 +237,19 @@
           return isCompoundVisible(this.field, this.formData)
         }
         return (this.showOptionalFields || this.isRequired) && this.field.visible(this.formData)
+      },
+      noOptionsMessage () {
+        const msgKey = 'form_no_options'
+        const namespace = 'ui-form'
+
+        if (this.$t) {
+          const i18nMessage = this.$t(namespace + ':' + msgKey)
+          if (i18nMessage !== msgKey) {
+            return i18nMessage
+          }
+        }
+
+        return defaultNoOptionsMessage
       }
     },
     components: {

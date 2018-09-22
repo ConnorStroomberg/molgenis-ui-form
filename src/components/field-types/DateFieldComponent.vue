@@ -49,6 +49,21 @@
   import flatPickr from 'vue-flatpickr-component'
   import 'flatpickr/dist/flatpickr.css'
   import moment from 'moment'
+  import { Portuguese } from 'flatpickr/dist/l10n/pt.js'
+  import { Spanish } from 'flatpickr/dist/l10n/es.js'
+  import { Italian } from 'flatpickr/dist/l10n/it.js'
+  import { French } from 'flatpickr/dist/l10n/fr.js'
+  import { Dutch } from 'flatpickr/dist/l10n/nl.js'
+  import { German } from 'flatpickr/dist/l10n/de.js'
+
+  const flatpickerLangMap = {
+    pt: Portuguese,
+    es: Spanish,
+    it: Italian,
+    fr: French,
+    nl: Dutch,
+    de: German
+  }
 
   export default {
     name: 'DateFieldComponent',
@@ -87,7 +102,8 @@
         config: {
           wrap: true,
           allowInput: true,
-          enableTime: this.isTimeIncluded
+          enableTime: this.isTimeIncluded,
+          dateFormat: this.isTimeIncluded ? 'Z' : 'Y-m-d'
         }
       }
     },
@@ -100,7 +116,7 @@
        * @returns {Moment} A date object created by moment
        */
       getDateFromValue (dateString) {
-        const format = this.isTimeIncluded ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD'
+        const format = this.isTimeIncluded ? moment.ISO_8601 : 'YYYY-MM-DD'
         return moment(dateString, format, true)
       },
 
@@ -119,14 +135,14 @@
       localValue (value) {
         // Only emit a data change if the date is valid
         if (this.isValidDateTime(value)) {
-          // Emit value changes to the parent (form)
-          // Always emit a date value, not a string
-          this.$emit('input', this.getDateFromValue(value).toDate())
-
-          // Emit value changes to trigger the onValueChange
-          // Do not use input event for this to prevent unwanted behavior
+          this.$emit('input', value)
           this.$emit('dataChange')
         }
+      }
+    },
+    created () {
+      if (flatpickerLangMap[this.$lng]) {
+        this.config.locale = flatpickerLangMap[this.$lng]
       }
     },
     components: {
