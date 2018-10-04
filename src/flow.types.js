@@ -36,6 +36,16 @@ export type RefEntityType = {
   writable?: boolean
 }
 
+export type FileMeta = {
+  id: string,
+  filename: string,
+  contentType?: string,
+  size?: number,
+  url: string,
+  _href: string,
+  _meta: any
+}
+
 /**
  * Optional settings object, allows user to tune the mapper, all fields are optional
  */

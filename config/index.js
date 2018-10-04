@@ -83,6 +83,23 @@ module.exports = {
         res.json(result)
       })
 
+      // mock resolve file metaData reference
+      app.get('/api/v2/sys_FileMeta/file-meta-id', function (req, res) {
+        res.json(
+          {
+            'id': 'file-meta-id',
+            'filename': 'bootstrap-slate.min.css',
+            '_href': '/api/v2/sys_FileMeta/file-meta-id',
+            'contentType': 'css',
+            'size': 162484,
+            'url': '/files/file-meta-id',
+            '_meta': {
+              'href': '/api/v2/sys_FileMeta'
+            }
+          }
+        )
+      })
+
     }
   },
 

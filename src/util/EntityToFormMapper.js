@@ -6,7 +6,8 @@ import type {
   HtmlFieldType,
   RefEntityType,
   MapperOptions,
-  MapperSettings
+  MapperSettings,
+  FileMeta
 } from '../flow.types'
 
 import evaluator from './helpers/evaluator'
@@ -76,6 +77,11 @@ const fetchFieldOptions = (refEntity: RefEntityType, search: ?string | ?Array<st
       }
     })
   })
+}
+
+const fetchFileMeta = (fileMetaId: string): Promise<FileMeta> => {
+  const fileMetaUri = '/api/v2/sys_FileMeta/' + fileMetaId
+  return api.get(fileMetaUri)
 }
 
 /**
@@ -329,8 +335,6 @@ const isDisabledField = (attribute, entityMetaData, mapperOptions: MapperSetting
  * @returns {{type: String, id, label, description, required: boolean, disabled, visible, options: ({uri, id, label, multiple}|{uri, id, label})}}
  */
 const generateFormSchemaField = (attribute, entityMetadata:any, mapperOptions: MapperSettings): FormField => {
-  // options is a function that always returns an array of option objects
-  const options = getFieldOptions(attribute, mapperOptions)
   const isDisabled = isDisabledField(attribute, entityMetadata, mapperOptions)
   let fieldProperties = {
     id: attribute.name,
@@ -362,6 +366,8 @@ const generateFormSchemaField = (attribute, entityMetadata:any, mapperOptions: M
     fieldProperties = {...fieldProperties, range}
   }
 
+  // options is a function that always returns an array of option objects
+  const options = getFieldOptions(attribute, mapperOptions)
   return options ? {...fieldProperties, options} : fieldProperties
 }
 
@@ -380,8 +386,10 @@ const getFieldValue = (fieldType: HtmlFieldType, fieldData: any, refEntityIdAttr
   }
 }
 
-const getDefaultValue = (fieldType: EntityFieldType, defaultValue: any) => {
+const getDefaultValue = (fieldType: EntityFieldType, defaultValue?: any):any | Promise<FileMeta> => {
   switch (fieldType) {
+    case 'FILE':
+      return defaultValue ? fetchFileMeta(defaultValue) : defaultValue
     case 'BOOL':
       return defaultValue === 'true' ? true : defaultValue === 'false' ? false : defaultValue === 'null' ? null : undefined
     case 'CATEGORICAL_MREF':

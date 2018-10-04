@@ -22,8 +22,7 @@
         {{ field.description }}
       </small>
 
-      <form-field-messages :field-id="field.id" :field-state="fieldState">
-      </form-field-messages>
+      <form-field-messages :field-id="field.id" :field-state="fieldState"></form-field-messages>
 
     </div>
   </validate>
@@ -41,7 +40,7 @@
     },
     props: {
       value: {
-        type: [File, String],
+        type: [File, String, Promise],
         required: false
       },
       field: {
@@ -82,6 +81,9 @@
       label: function () {
         return typeof this.value === 'string' ? this.value
           : this.value instanceof Blob ? this.value.name : ''
+      },
+      isPromise () {
+        return this.value && this.value.then && this.value.then instanceof Function
       }
     }
   }

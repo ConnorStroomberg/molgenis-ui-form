@@ -271,7 +271,8 @@ const metadata = {
       'visible': true,
       'lookupAttribute': true,
       'isAggregatable': false,
-      'description': 'DATE_TIME description'
+      'description': 'DATE_TIME description',
+      'defaultValue': '1985-08-12T11:12:13+0500'
     },
     {
       'href': '/api/v2/it_emx_datatypes_TypeTest/meta/date_time',
@@ -450,7 +451,8 @@ const metadata = {
       'visible': true,
       'lookupAttribute': true,
       'isAggregatable': false,
-      'description': 'FILE description'
+      'description': 'FILE description',
+      'defaultValue': 'file-meta-id'
     },
     {
       'href': '/api/v2/it_emx_datatypes_TypeTest/meta/xcompound',
@@ -739,6 +741,7 @@ const items = {
   hyperlink: 'www.nu.nl',
   boolean: true,
   nillable_date: '2017-09-06',
+  date_time_nillable: '1985-08-12T11:12:13+0500',
   categorical: {href: 'url', value: 'ref1', label: 'label1'},
   categorical_mref: [
     {href: 'url', value: 'ref1', label: 'label1'},
