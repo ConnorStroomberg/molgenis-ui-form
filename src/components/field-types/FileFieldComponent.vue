@@ -49,7 +49,7 @@ export default {
   },
   props: {
     value: {
-      type: [File, String],
+      type: [File, String, Object],
       required: false
     },
     field: {
@@ -110,8 +110,13 @@ export default {
       return this.$t ? this.$t(key) : key
     },
     label () {
+      console.log(this.localValue)
+      if (!this.localValue) {
+        return
+      }
       return typeof this.localValue === 'string' ? this.localValue
-        : this.localValue instanceof Blob ? this.localValue.name : ''
+        : this.localValue instanceof Blob ? this.localValue.name
+          : this.localValue.filename ? this.localValue.filename : ''
     }
   }
 }

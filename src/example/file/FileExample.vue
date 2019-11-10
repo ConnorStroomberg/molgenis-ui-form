@@ -55,11 +55,26 @@ export default {
           visible: () => true,
           required: () => false,
           validate: () => true
+        },
+        {
+          id: 'file-ref-example',
+          label: 'File Ref Field',
+          description: 'Molgenis file reference',
+          type: 'file',
+          visible: () => true,
+          required: () => false,
+          validate: () => true
         }
       ],
       formState: {},
       formData: {
-        'file-example': 'test-file-name.txt'
+        'file-example': 'test-file-name.txt',
+        'file-ref-example': {
+          filename: 'My File Name',
+          id: 'my-file-id',
+          url: 'http:demo.example.com/files/my-file-id',
+          _href: '/api/v2/my-entity/my-file-id'
+        }
       }
     }
   },
